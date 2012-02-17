@@ -1,0 +1,113 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!-- Consider adding a manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Network Overview</title>
+  <meta name="description" content="">
+
+  <!-- Mobile viewport optimized: h5bp.com/viewport -->
+  <meta name="viewport" content="width=device-width">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+
+  <link rel="stylesheet" href="../css/overview.css">
+
+  
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except this Modernizr build.
+       Modernizr enables HTML5 elements & feature detects for optimal performance.
+       Create your own custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="../js/lib/modernizr-2.0.6.min.js"></script>
+    
+</head>
+
+<body onload="trackMousePosition();">
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+  <header>
+
+  </header>
+  
+
+	<div class="title">Network Overview</div>
+
+	<div class="profile">
+  			<img src="../resource/icon/icon_calendar.png" align="right" width="64" height="64" alt="Map Duration" />
+  			From: <span id="start">12 July 2011</span>
+  			<br />To: <span id="end">13 July 2011</span>
+	</div>
+  	<div class="metroContainer"> 		
+		
+
+		<canvas class="metroBox" id="xhi"></canvas>
+		<canvas class="metroBox" id="xhw"></canvas>
+		<canvas class="metroBox" id="xhg"></canvas>
+		<canvas class="metroBox" id="xhb"></canvas>
+		<div class="vtext" id="xh">x. High</div>
+		
+  		<canvas class="metroBox" id="hi"></canvas>
+		<canvas class="metroBox" id="hw"></canvas>
+		<canvas class="metroBox" id="hg"></canvas>
+		<canvas class="metroBox" id="hb"></canvas>
+		<div class="vtext" id="h">High</div>
+
+  		<canvas class="metroBox" id="mi"></canvas>
+		<canvas class="metroBox" id="mw"></canvas>
+		<canvas class="metroBox" id="mg"></canvas>
+		<canvas class="metroBox" id="mb"></canvas>
+		<div class="vtext" id="m">Moderate</div>
+
+  		<canvas class="metroBox" id="li"></canvas>
+		<canvas class="metroBox" id="lw"></canvas>
+		<canvas class="metroBox" id="lg"></canvas>
+		<canvas class="metroBox" id="lb"></canvas>
+		<div class="vtext" id="l">Low</div>
+		
+		<div class="metroHeader" id="i">Internal</div> 		
+	  	<div class="metroHeader" id="w">Whitelist</div> 		
+	  	<div class="metroHeader" id="g">Graylist</div> 		
+	  	<div class="metroHeader" id="b">Blacklist</div> 
+	</div>
+	
+
+  	<div class="tooltip" id="tooltip"></div>
+  	<div class="fadeout"></div>
+
+
+  <footer>
+
+  </footer>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="../js/lib/jquery-1.7.1.min.js"></script>
+  <script src="../js/lib/jquery-ui-1.8.17.custom.min.js"></script>
+  <script src="../js/overview.js"></script>
+
+
+  <!-- scripts concatenated and minified via build script -->
+  <link rel="stylesheet" href="../css/style.css">
+  <!-- end scripts -->
+
+
+
+  
+
+
+</body>
+</html>

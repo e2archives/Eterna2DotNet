@@ -1,0 +1,217 @@
+body
+{
+	color:#BBCCBB;
+	margin:0%;
+	padding:0%;	
+	
+	min-height:480px;
+	min-width:640px;
+	
+	width:100%;
+	height:100%;
+	overflow: auto;
+	
+	background-image: url("../resource/texture/windows8_metro_green_1920_1080.jpg");
+	text-shadow: rgba(0,0,0,0.5) 0.1em 0.1em 0.2em
+}
+
+.container
+{
+	margin: 0%;
+	padding: 0%;
+}
+
+div.title
+{
+	//display: inline-block;
+	color:#BBCCBB;
+	font: 3em "Segoe UI Light";
+	float:left;
+
+	//min-height:30px;
+	//min-width:250px;
+	height:6%;
+	width:96%;
+	//border: solid 1px red;
+	vertical-align:bottom;
+	margin:1%;
+	padding:1%;
+	//text-shadow: 2px 2px 2px #333;
+}
+
+div.profile
+{
+	position:absolute;
+	top:2%;
+	right:2%;
+
+	color:#BBCCBB;
+	
+	width:200px;
+
+	//border: solid 1px red;
+	min-height:30px;
+	min-width:200px;
+
+	font: 1em "Segoe UI Light";
+	//border: solid 1px red;
+	float:right;
+	
+}
+
+
+div.metroHeader
+{
+	color:#BBCCBB;
+	//display: inline-block;
+	//border: solid 0px red;
+	min-height: 15px;
+	min-width: 64px;
+	height:8%;
+	width:22%;
+	//background-color: rgba(0,0,0,0.1);
+	margin:0.2%;
+	float:left;
+	//cursor: pointer;
+	opacity: 0.5;
+	//border-color: rgba(255,255,255,0.1);
+	//border-width: 1px;
+	//border-style: solid;
+	z-index: 0;
+	text-align: center;
+}
+
+canvas.metroBox
+{
+	//display: inline-block;
+	//border: solid 0px red;
+	min-height: 48px;
+	min-width: 64px;
+	height:18%;
+	width:23%;
+	//background-color: rgba(0,0,0,0.1);
+	margin:0.2%;
+	float:left;
+	cursor: pointer;
+	opacity: 0.5;
+	border-color: rgba(255,255,255,0.1);
+	border-width: 1px;
+	border-style: solid;
+	z-index: 0;
+	
+	
+	//-webkit-animation-name: fadeinEffect;
+	//-webkit-animation-duration: 0.5s;
+	//-webkit-animation-iteration-count: 1;
+	//-webkit-animation-timing-function:ease;
+}
+
+canvas.metroBox:hover
+{
+	opacity: 1;
+	border-color: rgba(255,255,255,0.8);
+	z-index: 100;
+	
+	-webkit-animation-name: fadeinEffect;
+	-webkit-animation-duration: 0.5s;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-timing-function: linear;
+
+	//-webkit-box-shadow: 0 0 5px rgba(81, 203, 138, 1);
+}
+
+div.metroContainer
+{
+	width: 96%;
+	margin:1%;
+	padding:1%;
+}
+
+div.fadeout
+{
+	position:absolute;
+	left:0;
+	top:0;
+	height:100%;
+	width:100%;
+	margin:0;
+	padding:0;
+	z-index:10;
+	background-color: #000000;
+	opacity:0.8;
+	visibility:hidden;
+}
+
+img#profile
+{
+	vertical-align: middle;
+	cursor: pointer;
+	
+}
+
+#start, #end
+{
+	font-family: "Segoe UI Light";
+	font-weight: normal;
+}
+
+div.tooltip
+{
+	visibility:hidden;
+	
+	position:absolute;
+	padding: 5px;
+	width: 300px;
+	height: 150px;
+	
+	font: 0.5em "Segoe UI Light";
+	
+	opacity: 0.8;
+	background-color:#222222;
+	
+}
+
+div.vtext 
+{
+	color:#BBCCBB;
+	//border:1px solid red;
+	//writing-mode:tb-rl;
+	white-space:nowrap;
+	//display:block;
+	//bottom:0;
+	width:20px;
+	//height:20px;
+	font-family: "Segoe UI Light";
+	//font-size:24px;
+	//font-weight:normal;
+	//text-shadow: 0px 0px 1px #333;
+	float:left;
+	text-align: center;
+	//-webkit-transform-style: preserve-3d;
+	-webkit-transform-origin:25% 25%;
+	-webkit-transform:rotate(90deg);
+	-moz-transform:rotate(90deg);
+	-o-transform: rotate(90deg);
+	//padding-bottom:30px;
+	margin:1%;
+	opacity: 0.5;
+	
+	text-shadow: black 0.1em 0.1em 0.2em;
+}
+
+
+@-webkit-keyframes animationEffect 
+{
+	0%		{-webkit-transform:scale(1);}
+	50%		{-webkit-transform:scale(1.05);}
+	100%	{-webkit-transform:scale(1);}
+}
+
+@-webkit-keyframes fadeinEffect 
+{
+	0%		{-webkit-transform: rotate(0);}
+	33%	{-webkit-transform: rotate(-2deg);}
+	66%	{-webkit-transform: rotate(2deg);}
+	
+	100%	{-webkit-transform: rotate(0);}
+}

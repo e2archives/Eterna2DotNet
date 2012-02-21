@@ -15,7 +15,8 @@ function init(){
 		"../resource/texture/skybox/pz.jpg",
 		"../resource/texture/skybox/nz.jpg"
 	];
-/*
+
+	/*
 	state = new E2THREE.DefaultSystemState();
 	state.camera.position.z = 700;
 	state.AddObject(E2THREE.createSkyBox(textureBox));

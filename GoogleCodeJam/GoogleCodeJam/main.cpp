@@ -26,5 +26,7 @@ int main()
 
 	
 	cin.get();
+	std::cout << "Press Return to Quit" <<std::endl;
+	cin.get();
 	return 0;
 }

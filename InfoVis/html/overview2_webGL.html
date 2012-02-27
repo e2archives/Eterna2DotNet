@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>three.js canvas - panorama fisheye demo</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: rgb(200,200,200);
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family:Monospace;
+				font-size:13px;
+				font-weight: bold;
+				text-align:center;
+			}
+
+			a {
+				color: #ffffff;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="container"></div>
+
+		<script src="../js/lib/jquery-1.7.1.min.js"></script>
+		<script src="../js/lib/Three.js"></script>
+		<script src="../js/lib/ShaderExtras.js"></script>
+
+		<script src="../js/postprocessing/EffectComposer.js"></script>
+		<script src="../js/postprocessing/MaskPass.js"></script>
+		<script src="../js/postprocessing/RenderPass.js"></script>
+		<script src="../js/postprocessing/ShaderPass.js"></script>
+		<script src="../js/postprocessing/BloomPass.js"></script>
+
+		<script src="../js/E2THREE.js"></script>
+
+		
+
+		<canvas id="textureCanvas" style="display:none;background-color:#FF0000;">I'm sorry your browser does not support the HTML5 canvas element.</canvas>
+		
+		
+		<script>
+			function loadScript(src, callback) {
+				var head = document.getElementsByTagName('head')[0],
+					script = document.createElement('script');
+				done = false;
+				script.setAttribute('src', src);
+				script.setAttribute('type', 'text/javascript');
+				script.setAttribute('charset', 'utf-8');
+				script.onload = script.onreadstatechange = function() {
+					if (!done && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')) {
+						done = true;
+						script.onload = script.onreadystatechange = null;
+							if (callback) {
+								callback();
+							}
+						}
+				}
+				head.insertBefore(script, head.firstChild);
+			}
+		 
+		// load the my-script-file.js and display an alert dialog once the script has been loaded
+		loadScript('../js/overview_webGL.js');
+		</script>
+
+	</body>
+</html>

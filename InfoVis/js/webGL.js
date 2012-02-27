@@ -34,18 +34,16 @@ function init() {
 
 	scene = new THREE.Scene();
 
-	/*
 	camera = new THREE.PerspectiveCamera( 33, window.innerWidth / window.innerHeight, 1, 10000 );
 	camera.position.z = 700;
 	scene.add( camera );
-*/
+
 	renderer = new THREE.WebGLRenderer( { clearColor: 0x000000, clearAlpha: 1, antialias: false } );
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.autoClear = false;
 
 	container.appendChild( renderer.domElement );
 
-	/*
 	var geometry = new THREE.Geometry(),
 		geometry2 = new THREE.Geometry(),
 		geometry3 = new THREE.Geometry(),
@@ -95,7 +93,7 @@ function init() {
 		scene.add( line );
 
 	}
-	*/
+
 	//
 
 	//stats = new Stats();
@@ -111,48 +109,28 @@ function init() {
 
 	//
 
-	//var renderModel = new THREE.RenderPass( scene, camera );
-	//var effectBloom = new THREE.BloomPass( 1.3 );
-	//var effectScreen = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );
-	//var effectFXAA = new THREE.ShaderPass( THREE.ShaderExtras[ "fxaa" ] );
+	var renderModel = new THREE.RenderPass( scene, camera );
+	var effectBloom = new THREE.BloomPass( 1.3 );
+	var effectScreen = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );
+	var effectFXAA = new THREE.ShaderPass( THREE.ShaderExtras[ "fxaa" ] );
 
-	//effectFXAA.uniforms[ 'resolution' ].value.set( 1 / window.innerWidth, 1 / window.innerHeight );
+	effectFXAA.uniforms[ 'resolution' ].value.set( 1 / window.innerWidth, 1 / window.innerHeight );
 
-	//effectScreen.renderToScreen = true;
+	effectScreen.renderToScreen = true;
 
-	//composer = new THREE.EffectComposer( renderer );
+	composer = new THREE.EffectComposer( renderer );
 
-	//composer.addPass( renderModel );
+	composer.addPass( renderModel );
 	//composer.addPass( effectFXAA );
 	//composer.addPass( effectBloom );
-	//composer.addPass( effectScreen );
+	composer.addPass( effectScreen );
 
-	//gl = renderer.getContext("experimental-webgl");
+	gl = renderer.getContext("experimental-webgl");
 	
-	//var mesh = renderText(100,100,-100,"ABCasdasdasdasdasdasdasdafdgdfgfdasdasdasd asdasdasdasd kjklasdjklasjdkljaslkdhaskldh asdjklasjdklasjdkljaskdjklasd jasdasdasdasdasd gfgsdasdD", 20, "#FFFFFF", "center", "bottom", fontFamily, 500);
-	//scene.addObject(mesh);
+	var mesh = renderText(100,100,-100,"ABCasdasdasdasdasdasdasdafdgdfgfdasdasdasd asdasdasdasd kjklasdjklasjdkljaslkdhaskldh asdjklasjdklasjdkljaskdjklasd jasdasdasdasdasd gfgsdasdD", 20, "#FFFFFF", "center", "bottom", fontFamily, 500);
+	scene.addObject(mesh);
 	
-	//setWallpaper();
-	
-        
-		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.z = 700;
- 
-
-        // cube
-        var colors = [0x0000ff, 0x00ff00, 0x00ffff, 0xff0000, 0xff00ff, 0xffff00];
-        var materials = [];
- 
-        for (var n = 0; n < 6; n++) {
-            materials.push([new THREE.MeshBasicMaterial({
-                color: colors[n]
-            })]);
-        }
- 
-        var cube = new THREE.Mesh(new THREE.CubeGeometry(300, 300, 300, 1, 1, 1, materials), new THREE.MeshFaceMaterial());
-        cube.overdraw = true;
-        scene.add(cube);   
- 
+	setWallpaper();
 
 }
 
@@ -250,8 +228,16 @@ function render() {
 
 	camera.lookAt( scene.position );
 
+	var time = Date.now() * 0.0005;
+
+	for( var i = 0; i < scene.objects.length; i ++ ) {
+
+		//scene.objects[ i ].rotation.y = time * ( i % 2 ? 1 : -1 );
+
+	}
+
 	renderer.clear();
-	//composer.render();
+	composer.render();
 
 }
 
@@ -328,16 +314,17 @@ function setWallpaper()
 {
 	var materials = [
 
-		ImageUtils_loadTexture( '../resource/texture/skybox/px.jpg' ), // right
-		ImageUtils_loadTexture( '../resource/texture/skybox/nx.jpg' ), // left
-		ImageUtils_loadTexture( '../resource/texture/skybox/py.jpg' ), // top
-		ImageUtils_loadTexture( '../resource/texture/skybox/ny.jpg' ), // bottom
-		ImageUtils_loadTexture( '../resource/texture/skybox/pz.jpg' ), // back
-		ImageUtils_loadTexture( '../resource/texture/skybox/nz.jpg' )  // front
+		loadTexture( '../resource/texture/skybox/px.jpg' ), // right
+		loadTexture( '../resource/texture/skybox/nx.jpg' ), // left
+		loadTexture( '../resource/texture/skybox/py.jpg' ), // top
+		loadTexture( '../resource/texture/skybox/ny.jpg' ), // bottom
+		loadTexture( '../resource/texture/skybox/pz.jpg' ), // back
+		loadTexture( '../resource/texture/skybox/nz.jpg' )  // front
 
 	];
 
 	var size = Math.max(window.innerWidth, window.innerHeight);
+	
 	
 	mesh = new THREE.Mesh( new THREE.CubeGeometry( size, size, size, 7, 7, 7, materials ), new THREE.MeshFaceMaterial() );
 	mesh.scale.x = - 1;
@@ -480,15 +467,6 @@ function generateShapes(parent)
 	
 	addGeometry(parent, roundedRect3d, roundedRectPoints, roundedRectSpacedPoints,	0x005500, -150,  150, 0, 0, 0, 0, 1 );
 }
-
-
-function ImageUtils_loadTexture(path){
-	var texture = new THREE.Texture( path );
-	texture.needsUpdate = true;
-	return texture;
-	
-}
-
 
 function addGeometry(parent, geometry, points, spacedPoints, color, x, y, z, rx, ry, rz, s ) {
 

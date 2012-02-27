@@ -158,6 +158,7 @@ var Update = function(){
 	dh = dollars.height/2,
 	dmin = w*w+h*h,
 	d = 0,
+	dd =0,
 	min = -1,
 	sumx = 0,
 	sumy = 0;
@@ -184,8 +185,20 @@ var Update = function(){
 		dy = food[i+1] - sumy;
 		d = dx*dx+dy*dy;
 
+		dx = sumx - x,
+		dy = sumy - y;
+		d += dx*dx+dy*dy;
 		
-		if (dmin > d)
+		dx = food[i] - x,
+		dy = food[i+1] - y;
+		dd = dx*dx+dy*dy;
+		
+		if (dd <= iw*iw) 
+		{
+			dmin = dd;
+			min = i;
+		}
+		else if (dmin > d)
 		{
 			dmin = d;
 			min = i;

@@ -43,7 +43,6 @@ var MouseUp = function(event) {
 	ctx = canvas.getContext('2d'),	
 	mx = event.offsetX,
 	my = event.offsetY;
-	console.log(event);
 	food.push(mx);
 	food.push(my);
 

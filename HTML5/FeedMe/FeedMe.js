@@ -159,7 +159,9 @@ var Update = function(){
 	dh = dollars.height/2,
 	dmin = w*w+h*h,
 	d = 0,
-	min = -1;
+	min = -1,
+	sumx = 0,
+	sumy = 0;
 	
 	ctx.save();
 	ctx.setTransform(w, 0, 0, 1, 0, 0);
@@ -169,10 +171,21 @@ var Update = function(){
 	ctx.save();
 	for (var i=0, len=food.length; i<len; i+=2)
 	{
+		sumx += food[i];
+		sumy += food[i+1];
+	}	
+	
+	sumx /= food.length/2;
+	sumy /= food.length/2;
+	
+	for (var i=0, len=food.length; i<len; i+=2)
+	{
 		ctx.drawImage(dollars, food[i]-dw, food[i+1]-dh);
-		var dx = food[i] - x,
-		dy = food[i+1] - y;
+		var dx = food[i] - sumx,
+		dy = food[i+1] - sumy;
 		d = dx*dx+dy*dy;
+
+		
 		if (dmin > d)
 		{
 			dmin = d;

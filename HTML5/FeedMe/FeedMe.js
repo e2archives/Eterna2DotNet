@@ -1,6 +1,7 @@
 (function() {
 
-var anim = 0, pig = [], dollars, f = 0, fd = 1, fa = 0.5, x = 0, y = 0, tx = 0, ty = 0, v = 0.5, iw = 64, ih = 64, t = false, food = [], w, h, ran = true;
+var anim = 0, pig = [], dollars, f = 0, fd = 1, fa = 0.5, x = 0, y = 0, tx = 0, ty = 0, v = 20, iw = 64, ih = 64, t = false, food = [], w, h, ran = true, lastT = new Date().getTime(),
+vx = 0,vy = 0;
 
 var Start = function(){
 	var scripts = document.getElementsByTagName("script"),
@@ -15,8 +16,6 @@ var Start = function(){
 	
     w = canvas.width;
     h = canvas.height; 
-	
-
 	
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -36,81 +35,36 @@ var Start = function(){
 	
 	dollars = new Image();
     dollars.src = src+"/dollars.png";
-		
-	canvas.addEventListener( 'touchstart', TouchStart, false );
-	canvas.addEventListener( 'touchmove', TouchMove, false );
-	canvas.addEventListener( 'touchend', TouchEnd, false );
-	canvas.addEventListener( 'mousemove', MouseMove, false );
-	canvas.addEventListener( 'mouseup', MouseUp, false );
+
+	canvas.addEventListener( 'click', Click, false );
+
 	
     window.setInterval(Update, 30);
 };
 
 
-var MouseUp = function(event) {
+var Click = function(event) {
 
     var canvas = document.getElementById('feedmeCanvas'),
 	ctx = canvas.getContext('2d'),	
-	mx = event.offsetX,
-	my = event.offsetY;
+	mx = event.offsetX || (event.clientX - canvas.offsetLeft),
+	my = event.offsetY || (event.clientY - canvas.offsetTop);
 	food.push(mx);
 	food.push(my);
-
 }
 
-var MouseMove = function(event) {
 
-}
+var MovePig = function(dt){
 
-var TouchStart = function(event) {
-
-	console.log(event);
-	if ( event.touches.length > 1 ) {
-
-		event.preventDefault();
-		t = true;
-		//mouseX = event.touches[ 0 ].pageX - halfWidth;
-		//mouseY = event.touches[ 0 ].pageY - halfHeight;
-		var mx = event.touches[ 0 ].pageX,
-		my = event.touches[ 0 ].pageY;
-		
-		ctx.drawImage(pig, mx, my, iw, ih);
-
+	dt /= 1000.0;
+	
+	if (iw > 24)
+	{
+		iw -= dt;
+		ih -= dt;
 	}
-
-}
-
-var TouchMove = function(event) {
-
-	if ( event.touches.length == 1 ) {
-
-		event.preventDefault();
-
-		var mx = event.touches[ 0 ].pageX,
-		my = event.touches[ 0 ].pageY;
-		
-		//ctx.drawImage(pig, mx, my, iw, ih);
-	}
-
-}
-
-var TouchEnd = function(event) {
-
-	if ( event.touches.length > 1 ) {
-
-		event.preventDefault();
-		t = false;
-		//mouseX = event.touches[ 0 ].pageX - halfWidth;
-		//mouseY = event.touches[ 0 ].pageY - halfHeight;
-
-	}
-
-}
-
-var MovePig = function(min){
-
-
-	if (min == -1 && ran === true)
+	
+	if (food.length<=0 && ran === true)
 	{
 		tx = iw + Math.random() * (w-2*iw);
 		ty = ih + Math.random() * (h-2*ih);
@@ -120,29 +74,22 @@ var MovePig = function(min){
 	var dx = tx - x,
 	dy = ty - y,
 	n = dx*dx+dy*dy;
+
+	n = Math.sqrt(n);
 	
-	if (n >= 0 && n <= 25) 
+	if (n <= iw)
 	{
-		x = tx;
-		y = ty;
-		if (min != -1) 
-		{
-			food.splice(min,2);
-			ih += 2;
-			iw += 2;		
-		}
-		else ran = true;
+		ran = true;
 	}
-	else
-	{
-		n = 1/Math.sqrt(n);
 	
-		dx *= n * v;
-		dy *= n * v;
+	n = 1/n;
+	n *= v * dt;
 	
-		x += dx;
-		y += dy;
-	}
+	dx *= n;
+	dy *= n;
+	
+	x += dx;
+	y += dy;
 	
 	f += fd*fa;
 	if (f >= 5) 
@@ -169,9 +116,10 @@ var Update = function(){
 	dmin = w*w+h*h,
 	d = 0,
 	dd =0,
-	min = -1,
+	min = [],
 	sumx = 0,
-	sumy = 0;
+	sumy = 0,
+	thre = iw*iw/4;
 	
 	ctx.save();
 	ctx.setTransform(w, 0, 0, 1, 0, 0);
@@ -179,41 +127,33 @@ var Update = function(){
 	ctx.restore();
 
 	ctx.save();
-	for (var i=0, len=food.length; i<len; i+=2)
-	{
-		sumx += food[i];
-		sumy += food[i+1];
-	}	
-	
-	sumx /= food.length/2;
-	sumy /= food.length/2;
 	
 	for (var i=0, len=food.length; i<len; i+=2)
 	{
 		ctx.drawImage(dollars, food[i]-dw, food[i+1]-dh);
-		var dx = food[i] - sumx,
-		dy = food[i+1] - sumy;
-		d = dx*dx+dy*dy;
-
-		dx = sumx - x,
-		dy = sumy - y;
-		d += dx*dx+dy*dy;
 		
-		dx = food[i] - x,
-		dy = food[i+1] - y;
-		dd = dx*dx+dy*dy;
+		var dx = food[i] - x,
+		dy = food[i+1] - y,
+		ll = dx*dx+dy*dy;
 		
-		if (dd <= iw*iw) 
+		if (ll <= thre)
 		{
-			dmin = dd;
-			min = i;
+			min.push(i);
 		}
-		else if (dmin > d)
-		{
-			dmin = d;
-			min = i;
-		}
+		
+		ll = (dmin-len)/ll;
+		
+		sumx += ll * dx;
+		sumy += ll * dy;
 	}
+	
+	for(var i=0, len=min.length; i<len; i++)
+	{
+		food.splice(min[i],2);
+		ih += 2;
+		iw += 2;
+	}
+	
 	ctx.restore();
 	
 	ctx.save();
@@ -223,16 +163,19 @@ var Update = function(){
 	ctx.drawImage(pig[anim], x-iw/2, y-ih/2, iw, ih);
 	ctx.restore();
 
-	if (min !== -1)
+	if (food.length > 0)
 	{
-		tx = food[min];
-		ty = food[min+1];
-	}
+		tx = sumx + 0.1*vx;
+		ty = sumy + 0.1*vy;
+		vx = tx;
+		vy = ty;
+		ran = true;
+	}		
 
-	MovePig(min);
-
-
+	var nowT = new Date().getTime();
+	MovePig(nowT-lastT);
 	
+	lastT = nowT;
 };
 
 var GetPowerOfTwo = function(value, pow) {

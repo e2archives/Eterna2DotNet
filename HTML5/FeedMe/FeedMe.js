@@ -3,10 +3,20 @@
 var anim = 0, pig = [], dollars, f = 0, fd = 1, fa = 0.5, x = 0, y = 0, tx = 0, ty = 0, v = 0.5, iw = 64, ih = 64, t = false, food = [], w, h, ran = true;
 
 var Start = function(){
+	var scripts = document.getElementsByTagName("script"),
+	src = scripts[scripts.length-1].src;
+
+	src = src.substring(0, src.lastIndexOf("/"));
+	
     var canvas = document.getElementById('feedmeCanvas'),
 	ctx = canvas.getContext('2d');
-    w = canvas.width,
+	//canvas.width = window.innerWidth;
+	//canvas.height = window.innerHeight;
+	
+    w = canvas.width;
     h = canvas.height; 
+	
+
 	
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -18,14 +28,14 @@ var Start = function(){
 	pig[0].onload = function(){
         ctx.drawImage(pig[0], x, y, iw, ih);
     };
-    pig[0].src = "pig.png";
+    pig[0].src = src+"/pig.png";
 
 	pig.push(new Image());
-    pig[1].src = "pig2.png";
+    pig[1].src = src+"/pig2.png";
 
 	
 	dollars = new Image();
-    dollars.src = "dollars.png";
+    dollars.src = src+"/dollars.png";
 		
 	canvas.addEventListener( 'touchstart', TouchStart, false );
 	canvas.addEventListener( 'touchmove', TouchMove, false );

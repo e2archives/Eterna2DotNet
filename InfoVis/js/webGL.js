@@ -43,11 +43,7 @@ function init() {
 	renderer.autoClear = false;
 
 	container.appendChild( renderer.domElement );
-	//renderer.domElement.style.width = "100%";
-	//renderer.domElement.style.height = "100%";
-	
-	
-	
+
 	var geometry = new THREE.Geometry(),
 		geometry2 = new THREE.Geometry(),
 		geometry3 = new THREE.Geometry(),
@@ -131,11 +127,11 @@ function init() {
 
 	gl = renderer.getContext("experimental-webgl");
 	
-	//var mesh = renderText(100,100,-100,"ABCasdasdasdasdasdasdasdafdgdfgfdasdasdasd asdasdasdasd kjklasdjklasjdkljaslkdhaskldh asdjklasjdklasjdkljaskdjklasd jasdasdasdasdasd gfgsdasdD", 20, "#FFFFFF", "center", "bottom", fontFamily, 500);
-	//scene.addObject(mesh);
+	var mesh = renderText(100,100,-100,"ABCasdasdasdasdasdasdasdafdgdfgfdasdasdasd asdasdasdasd kjklasdjklasjdkljaslkdhaskldh asdjklasjdklasjdkljaskdjklasd jasdasdasdasdasd gfgsdasdD", 20, "#FFFFFF", "center", "bottom", fontFamily, 500);
+	scene.addObject(mesh);
 	
 	setWallpaper();
-	WindowResize(renderer, camera);
+
 }
 
 // port of Processing Java code by Thomas Diewald
@@ -247,8 +243,58 @@ function render() {
 
 
 
+function renderText(x, y, z, textToWrite, textHeight, fontColor, textAlign, textBaseline, fontFamily, maxWidth)
+{			
+	var text = [],
+	textX, textY,
+	canvasTexture;
 
+	// get canvas
+	var canvas = document.getElementById('textureCanvas');
+	if (!canvas) canvas = document.createElement("textureCanvas");
+	
+	var ctx = canvas.getContext('2d');
 
+	// 2D Canvas text rendering properties
+	createMultilineText(ctx, textToWrite, maxWidth, text);
+	canvasX = getPowerOfTwo(maxWidth);
+	canvasY = getPowerOfTwo(textHeight*(text.length+1));
+	canvas.width = canvasX;
+	canvas.height = canvasY;
+
+	
+	ctx.fillStyle = fontColor; 	
+	ctx.textAlign = textAlign;	
+	ctx.textBaseline = textBaseline;	
+	ctx.font = textHeight+"px "+fontFamily;	
+
+	textX = canvasX/2;
+	var offset = (canvasY - textHeight*(text.length+1)) * 0.5;
+
+	for(var i = 0; i < text.length; i++) {
+		textY = (i+1)*textHeight + offset;
+		ctx.fillText(text[i], textX,  textY);
+	}
+
+	var texture = new THREE.Texture(canvas);
+	texture.needsUpdate = true;
+
+	var material = new THREE.MeshBasicMaterial({
+		map : texture, transparent: true
+	});
+
+	material.opacity = 0.8;
+	
+	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width, canvas.height), material);
+	// mesh.overdraw = true;
+	mesh.doubleSided = true;
+	mesh.position.x = x;
+	mesh.position.y = y;
+	mesh.position.z = z;
+
+	return mesh;
+
+}
 
 function shapeInit(imageCanvas)
 {
@@ -257,19 +303,12 @@ function shapeInit(imageCanvas)
 
 function loadTexture( path ) {
 
-	var image = new Image;
-	var texture = new THREE.Texture( image, THREE.UVMapping );
-	image.onload = function(){
-		texture.needsUpdate =! 0;	
-	};	
-	image.src = path;
-
+	var texture = THREE.ImageUtils.loadTexture( path, THREE.UVMapping );
 	var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: true } );
 
 	return material;
 
 }
-
 
 function setWallpaper()
 {
@@ -398,7 +437,7 @@ function createMultilineText(ctx, textToWrite, maxWidth, text) {
 	}
 	
 	// Return the maximum line width
-	return maxLineWidth.width;
+	return maxLineWidth;
 }
 
 function generateShapes(parent)
@@ -482,25 +521,4 @@ function addGeometry(parent, geometry, points, spacedPoints, color, x, y, z, rx,
 	//particles2.scale.set( s, s, s );
 	//parent.add( particles2 );
 
-}
-
-function WindowResize(renderer, camera){
-	var callback	= function(){
-		// notify the renderer of the size change
-		renderer.setSize( window.innerWidth, window.innerHeight );
-		// update the camera
-		camera.aspect	= window.innerWidth / window.innerHeight;
-		camera.updateProjectionMatrix();
-	}
-	// bind the resize event
-	window.addEventListener('resize', callback, false);
-	// return .stop() the function to stop watching window resize
-	return {
-		/**
-		 * Stop watching window resize
-		*/
-		stop	: function(){
-			window.removeEventListener('resize', callback);
-		}
-	};
 }

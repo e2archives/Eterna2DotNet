@@ -1,0 +1,89 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!-- Consider adding a manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Network Overview</title>
+  <meta name="description" content="">
+
+  <!-- Mobile viewport optimized: h5bp.com/viewport -->
+  <meta name="viewport" content="width=device-width">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+
+
+
+  
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except this Modernizr build.
+       Modernizr enables HTML5 elements & feature detects for optimal performance.
+       Create your own custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="../js/lib/modernizr-2.0.6.min.js"></script>
+    
+</head>
+
+<body onload="vizana.init();">
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+  <header>
+
+  </header>
+  
+
+	<div id="title"><span></span></div>
+	<div id="q0" class="header"><span></span></div>
+	<div id="q1" class="header"><span></span></div>
+	<div id="q2" class="header"><span></span></div>
+	<div id="q3" class="header"><span></span></div>
+	<div id="q4" class="header"><span></span></div>
+	<canvas id="graph">Sorry, HTML5 Canvas is not supported by your browser!</canvas>
+	<div id="b1" class="quad"></div>
+	<div id="b2" class="quad"></div>
+	<div id="b3" class="quad"></div>
+	<div id="b4" class="quad"></div>
+	<div id="c0" class="footer"><span>0%</span></div>
+	<div id="c1" class="footer"><span>25%</span></div>
+	<div id="c2" class="footer"><span>50%</span></div>
+	<div id="c3" class="footer"><span>75%</span></div>
+	<div id="c4" class="footer"><span>100%</span></div>
+	<div id="xvalue" class="footer"><span></span></div>
+	<div id="content" class="anim"></div>
+	<div id="contentfooter" class="anim"></div>
+	<div id="contentselected" class="anim"></div>
+
+  <footer>
+
+  </footer>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="../js/lib/jquery-1.7.1.min.js"></script>
+  <script src="../js/lib/jquery-ui-1.8.17.custom.min.js"></script>
+  <script src="../js/template.js"></script>
+
+
+  <!-- scripts concatenated and minified via build script -->
+  <link rel="stylesheet" href="../css/template.css">
+  <!-- end scripts -->
+
+
+
+  
+
+
+</body>
+</html>

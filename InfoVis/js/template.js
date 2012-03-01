@@ -25,7 +25,9 @@ vizana.init = function()
 var w = window.innerWidth,
 h = window.innerHeight,
 p = 10,
-selected = "b4";
+selected = "b4",
+showFrom = 0;
+
 
 // private methods
 function resize()
@@ -64,13 +66,30 @@ function quadClick(event)
 
 }
 
+function setupBars(id)
+{
+	var y = h/2+100, barh = h-y-p-18+6*4;
+	
+	var code = '<div class="bar" style="height:'+barh+';width=1000"></div>';
+	
+	$("#bars").html(code);
+	
+}
+
 function setupSelect(id)
 {
 	var x = $("#"+id).offset().left,
 	y = $("#"+id).offset().top,
 	qh = $("#"+id).height(),
-	qw = $("#"+id).width();
+	qw = $("#"+id).width(),
+	x1,y1,x2,y2,xx,yy;
 
+	var canvas = document.getElementById("selected");
+	canvas.width = w;
+	canvas.height = h;
+	
+	var ctx = canvas.getContext("2d");
+	/*
 	$("#contentselected").css({	
 		"position":"absolute",
 		"top": y, 
@@ -78,6 +97,44 @@ function setupSelect(id)
 		"width": qw-1,
 		"height": qh+30+25+18
 	});
+	*/
+	ctx.clearRect(0, 0, w, h);
+	ctx.fillStyle = "rgba(154,83,75,0.3)";
+	ctx.beginPath();
+	xx = x;
+	yy = y;
+	ctx.moveTo(xx,yy);
+	xx += qw;
+	ctx.lineTo(xx,yy);
+	yy += qh;
+	ctx.lineTo(xx,yy);
+	x1 = xx;
+	y1 = yy + 50;
+	xx = w-p;
+	yy += 100;
+	x2 = xx;
+	y2 = y1;
+	ctx.bezierCurveTo(x1,y1,x2,y2,xx,yy);  
+	yy = h-p;
+	ctx.lineTo(xx,yy);
+	xx = p;
+	ctx.lineTo(xx,yy);
+	yy = y+qh+100;
+	ctx.lineTo(xx,yy);
+	x1 = xx;
+	y1 = yy - 50;
+	xx = x;
+	yy = y+qh;
+	x2 = xx;
+	y2 = y1;
+	ctx.bezierCurveTo(x1,y1,x2,y2,xx,yy);  
+	xx= x;
+	yy = y;
+	ctx.lineTo(xx,yy);
+	ctx.closePath();
+	ctx.fill();
+	
+	setupBars(id);
 }
 
 function setupGraph()
@@ -189,7 +246,14 @@ function setupCSS()
 						"width": w-p-p,
 						"height": bh,
 						});	
-		
+						
+	$("#selected").css({ 
+		"position":"absolute",
+		"top": 0, 
+		"right": 0,
+		"width": w,
+		"height": h,
+	});	
 	
 	$("#b1").css({ 	"position":"absolute",
 						"top": tmpy, 
@@ -289,12 +353,12 @@ function setupCSS()
 						"text-align": "right"
 						
 						});
-						
+		
 	tmpx = p;
 	tmpy += 25 + 30;
 	dh = h - tmpy - p - 18;
 						
-	$("#content").css({ "position":"absolute",
+	$("#bars").css({ "position":"absolute",
 						"top": tmpy, 
 						"right": p,
 						"width": w-p-p,
@@ -310,7 +374,9 @@ function setupCSS()
 						"height": 18,
 						});
 						
+	
 
+						
 }
 
 

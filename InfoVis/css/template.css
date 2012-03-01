@@ -75,6 +75,14 @@ body
 	padding:5px;
 }
 
+#selected
+{
+	margin:0px;
+	padding:0px;
+	background-color: transparent;
+	z-index:0;
+}
+
 #contentselected
 {
 	margin:0px;
@@ -94,7 +102,8 @@ body
 {
 	margin:0px;
 	padding:0px;
-	background-color: rgb(195,171,164);
+	background-color: rgba(100,071,64,0.3);
+	z-index:10;
 }
 
 #graph
@@ -102,6 +111,21 @@ body
 	margin:0px;
 	padding:0px;
 	background-color: transparent;
+}
+
+.bar
+{
+	margin:0px;
+	padding:0px;
+	background-color: rgb(252,167,86);
+	border-radius: 5 px;
+	z-index:20;
+}
+
+#bars
+{
+	margin:0px;
+	padding:0px;
 }
 
 div.profile

@@ -1,6 +1,8 @@
 (function(vizana, $, undefined){
 
 // public
+vizana.servelet = "http://172.27.183.11:8080/REtoServlet/ReHttpServlet";
+vizana.SQL = "SELECT * FROM test_table WHERE Percentile=1 AND Rank >= 1 AND Rank <= 4;";
 vizana.title = "EXTERNAL <big>IPs</big>";
 vizana.quadrant = [0,100,300,4000,10000];
 vizana.xvalue = "no. of events";
@@ -9,44 +11,83 @@ vizana.q2 = [0.8,0.5,0.3,0.5,0.44];
 vizana.q3 = [0.8,0.5,0.3,0.5,0.44];
 vizana.q4 = [0.8,0.5,0.3,0.5,0.44];
 
-// public methods
-vizana.init = function()
-{
-	setupCSS();
-	setupText();
-	setupGraph();
-	setupListener();
-	setupSelect(selected);
-	
-	$(window).resize(resize);
-};
 
 // private
 var w = window.innerWidth,
 h = window.innerHeight,
 p = 10,
 selected = "b4",
-showFrom = 0;
+showFrom = 0,
+currentbar = -1,
+currentbarend = -1,
+barsData = [],
+pagesize = 10,
+maxCount,
+quadrantValues,
+ranks,
+graph,
+getDataStack = 0,
+dataStackCallback = function(){},
+loaded = false;
+
+// public methods
+vizana.init = function()
+{
+	dataStackCallback = initData;
+
+	// 2 inside getdata stack
+	getDataStack = 4;
+	
+	var param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT max(Count) FROM test_table;"};
+	getData(param, function(data){maxCount=data[""][0]["max(Count)"];}).success(popDataStack);
+
+	param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT min(Rank),max(Rank) FROM test_table GROUP BY Percentile ORDER BY Percentile;"};
+	getData(param, function(data){ranks=data[""];}).success(popDataStack);
+		
+	param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT max(Count) FROM test_table GROUP BY Percentile ORDER BY Percentile;"};
+	getData(param, function(data){quadrantValues=data[""];}).success(popDataStack);
+		
+	param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT Count FROM test_table ORDER BY Rank;"};
+	getData(param, function(data){graph=data["test_table"];}).success(popDataStack);	
+
+};
 
 
 // private methods
+function initData()
+{
+	setupCSS();
+	setupText();
+	setupGraph();
+	setupListener();
+	setupSelect(selected);
+	$(window).resize(resize);
+
+	console.log(graph);
+}
+
 function resize()
 {
 	setupCSS();
 	setupGraph();
-	setupSelect(selected)
+	setupSelect(selected);
 }
 
-
+function popDataStack()
+{
+	getDataStack--;
+	
+	if (getDataStack == 0) dataStackCallback();
+}
 
 function setupText()
 {
 	$("#title span").html(vizana.title);
-	$("#q0 span").html(vizana.quadrant[0]);
-	$("#q1 span").html(vizana.quadrant[1]);
-	$("#q2 span").html(vizana.quadrant[2]);
-	$("#q3 span").html(vizana.quadrant[3]);
-	$("#q4 span").html(vizana.quadrant[4]);
+	$("#q0 span").html(0);
+	$("#q1 span").html(quadrantValues[0]["max(Count)"]);
+	$("#q2 span").html(quadrantValues[1]["max(Count)"]);
+	$("#q3 span").html(quadrantValues[2]["max(Count)"]);
+	$("#q4 span").html(quadrantValues[3]["max(Count)"]);
 	$("#xvalue span").html(vizana.xvalue).css({"padding":2, "font-size": "18px"});
 }
 
@@ -58,22 +99,107 @@ function setupListener()
 function quadClick(event)
 {
 	var id = this.id;
-	$(".anim").fadeOut("fast",function(){
+
+	$(".anim").hide("puff","fast");
+
+	$(".anim").promise().done(function(){
 		selected = id;
 		setupSelect(id);
-		$(".anim").fadeIn("fast");
+		$(".anim").show("puff","fast");
+	}).promise().done(function(){
+		$(".bar").show("slide","slow");
 	});
-
 }
 
-function setupBars(id)
+function getBarsData(from)
 {
-	var y = h/2+100, barh = h-y-p-18+6*4;
+	currentbar = from - pagesize;
+	currentbarend = from + 4 + pagesize;
+
+	var param = {"VOid":1, "Type":1, "Mode":0, "Param":vizana.SQL};
+		//$.getJSON(vizana.servelet+"?&callback=?", param, refreshBars);
+
+	getData(param, function(data, textStatus, jqXHR) {
+			saveData(data, textStatus, jqXHR);
+			refreshBars(data, textStatus, jqXHR);
+		});
+}
+
+function getData(param, successFn)
+{
+	return $.ajax({
+		url: vizana.servelet,
+		data: param,
+		dataType: "jsonp",
+		jsonp: "callback",
+		timeout: 10000,
+		success: successFn,
+		error: function(XHR, textStatus, errorThrown){
+        alert("Failed to retrieve data: " + errorThrown);
+		}
+	});
+}
+
+function updateBarsData(dir)
+{
+	// redraw stuff before updating the data in memory
+	refreshBars(data);
+	currentbar += dir*pagesize;
+	currentbarend += dir*pagesize;
 	
-	var code = '<div class="bar" style="height:'+barh+';width=1000"></div>';
+	var param = {"VOid":1, "Type":1, "Mode":0, "Param":vizana.SQL};
+	//$.getJSON(vizana.servelet+"?&callback=?", param, saveData);
+		
+	// update data
+	getData(param, saveData);
+	
+}
+
+function saveData(data, textStatus, jqXHR)
+{
+	barsData = data;
+}
+
+function refreshBars(data, textStatus, jqXHR)
+{
+	var y = h/2+100, barh = (h-y-p-18-7*10)/5;
+	
+	var code = "";
+	for (var i=0, len = 5; i<len; i++)
+	{	
+		code += '<div class="bar" style="position:absolute;top:'+((barh+10)*i+10)+'px;left:10px;width:'+(Math.random()*w-5*p)+'px;height:'+barh+'px;"></div>';
+	}
 	
 	$("#bars").html(code);
 	
+}
+
+function setupBars(from)
+{	
+	showFrom = from;
+
+	var left = currentbar - from,
+	right = showFrom + 4 - currentbarend;
+
+	// if outside the barsData, redo everything
+	if (left > 0 || right > 0)
+	{
+		getBarsData(showFrom);
+	}
+	// if at the border region of barsData, show the bars then start retrieving a new set of data
+	else if (left > - pagesize/2)
+	{
+		updateBarsData(-1);
+	}
+	else if (right > - pagesize/2)
+	{
+		updateBarsData(1);
+	}
+	else
+	{
+		refreshBars(barsData);
+	}
+	refreshBars(barsData);
 }
 
 function setupSelect(id)
@@ -134,7 +260,7 @@ function setupSelect(id)
 	ctx.closePath();
 	ctx.fill();
 	
-	setupBars(id);
+	setupBars(0);
 }
 
 function setupGraph()
@@ -154,10 +280,11 @@ function setupGraph()
 	ctx.fillStyle = "rgb(227,196,163)";  
 	ctx.beginPath();
 	ctx.moveTo(0,qh);
-	drawQ(0, quadWidth, qh, ctx, vizana.q1);
-	drawQ(quadWidth, quadWidth, qh, ctx, vizana.q2);
-	drawQ(quadWidth*2, quadWidth, qh, ctx, vizana.q3);
-	drawQ(quadWidth*3, quadWidth, qh, ctx, vizana.q4);
+	drawGraph(0, canvas.width, qh, ctx, graph,"Count");
+	//drawQ(0, quadWidth, qh, ctx, vizana.q1);
+	//drawQ(quadWidth, quadWidth, qh, ctx, vizana.q2);
+	//drawQ(quadWidth*2, quadWidth, qh, ctx, vizana.q3);
+	//drawQ(quadWidth*3, quadWidth, qh, ctx, vizana.q4);
 	ctx.lineTo(quadWidth*4,qh);
 	ctx.lineTo(0,qh);
 	ctx.closePath();
@@ -172,6 +299,16 @@ function drawQ(startX, quadWidth, qh, ctx, q)
 	for (var i=0; i<len; i++)
 	{
 		ctx.lineTo(startX+(i+1)*step,(1-q[i])*qh);
+	}
+}
+
+function drawGraph(startX, quadWidth, qh, ctx, q, index)
+{
+	var len = q.length,
+	step = quadWidth/len;
+	for (var i=0; i<len; i++)
+	{
+		ctx.lineTo(startX+(i+1)*step,(1-q[i][index]/maxCount)*qh);
 	}
 }
 
@@ -355,7 +492,7 @@ function setupCSS()
 						});
 		
 	tmpx = p;
-	tmpy += 25 + 30;
+	tmpy += 25 + 50;
 	dh = h - tmpy - p - 18;
 						
 	$("#bars").css({ "position":"absolute",

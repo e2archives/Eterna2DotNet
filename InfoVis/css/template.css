@@ -53,11 +53,26 @@ body
 	background-color: rgba(214,205,197,0.5);
 	z-index:10;
 	cursor: pointer;
+	color: rgba(10,0,0,0.6);
 }
 
 .quad:hover
 {
-	border: 1px solid black;
+	-webkit-box-shadow: inset 0 0 5px rgba(100,071,64,0.5), 0 0 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: inset 0 0 5px rgba(100,071,64,0.5), 0 0 0px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 5px rgba(100,071,64,0.5), 0 0 0px rgba(0,0,0,0.5);
+}
+
+.overviewbox
+{
+	margin:0px;
+	padding:0px;
+	background-color: rgb(200,171,164);
+	
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+
 }
 
 .footer
@@ -66,6 +81,7 @@ body
 	margin:0px;
 	padding:0px;
 	background-color: rgb(162,168,157);
+
 }
 
 .footer span
@@ -73,6 +89,7 @@ body
 	font-size: 12px;
 	margin:0px;
 	padding:5px;
+
 }
 
 #selected
@@ -96,6 +113,7 @@ body
 	margin:0px;
 	padding:0px;
 	background-color: transparent;
+	
 }
 
 .bar
@@ -104,7 +122,9 @@ body
 	padding:0px;
 	background-color: rgb(252,167,86);
 	z-index:20;
-	visibility:hidden
+	
+	text-align: right;
+	vertical-align: middle;
 
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -122,4 +142,45 @@ body
 	margin:0px;
 	padding:0px;
 	overflow: visible;
+}
+
+
+#bgspinner
+{
+	margin:0px;
+	padding:0px;
+	height:100%;
+	width:100%;
+	position:absolute;
+	left:0px;
+	top:0px;
+	background-color: rgb(219,214,195);
+	z-index:110;
+}
+
+
+#spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -100px 0 0 -100px;
+	height: 200px;
+	width: 200px;
+	text-indent: 250px;
+	white-space: nowrap;
+	overflow: hidden;
+	
+	background-color: #000;
+	-webkit-mask-image: url(../resource/icon/spinner.png);
+	-webkit-animation-name: spinnerRotate;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+
+	z-index:120;
+}
+
+@-webkit-keyframes spinnerRotate {
+	from {	-webkit-transform:rotate(0deg);	}
+	to {	-webkit-transform:rotate(360deg);	}
 }

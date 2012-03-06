@@ -2,14 +2,8 @@
 
 // public
 vizana.servelet = "http://172.27.183.11:8080/REtoServlet/ReHttpServlet";
-vizana.SQL = "SELECT * FROM test_table WHERE Percentile=1 AND Rank >= 1 AND Rank <= 4;";
 vizana.title = "EXTERNAL <big>IPs</big>";
-vizana.quadrant = [0,100,300,4000,10000];
 vizana.xvalue = "no. of events";
-vizana.q1 = [0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.2, 0.4000, 0.6040, 0.7080];
-vizana.q2 = [0.8,0.5,0.3,0.5,0.44];
-vizana.q3 = [0.8,0.5,0.3,0.5,0.44];
-vizana.q4 = [0.8,0.5,0.3,0.5,0.44];
 
 
 // private
@@ -60,10 +54,11 @@ function initData()
 	setupText();
 	setupGraph();
 	setupListener();
-	setupSelect(selected);
 	$(window).resize(resize);
+	$(".loading").hide("fade","slow");
 
-	console.log(graph);
+	setupSelect(selected);
+
 }
 
 function resize()
@@ -76,7 +71,6 @@ function resize()
 function popDataStack()
 {
 	getDataStack--;
-	
 	if (getDataStack == 0) dataStackCallback();
 }
 
@@ -101,32 +95,24 @@ function quadClick(event)
 	var id = this.id;
 
 	$(".anim").hide("puff","fast");
+	$(".bar").hide("slide","fast");
 
 	$(".anim").promise().done(function(){
 		selected = id;
 		setupSelect(id);
 		$(".anim").show("puff","fast");
-	}).promise().done(function(){
-		$(".bar").show("slide","slow");
 	});
 }
 
-function getBarsData(from)
+function getID(id)
 {
-	currentbar = from - pagesize;
-	currentbarend = from + 4 + pagesize;
-
-	var param = {"VOid":1, "Type":1, "Mode":0, "Param":vizana.SQL};
-		//$.getJSON(vizana.servelet+"?&callback=?", param, refreshBars);
-
-	getData(param, function(data, textStatus, jqXHR) {
-			saveData(data, textStatus, jqXHR);
-			refreshBars(data, textStatus, jqXHR);
-		});
+	return id.charAt(id.length-1);
 }
 
 function getData(param, successFn)
 {
+	$("#spinner").show("fade","slow");
+
 	return $.ajax({
 		url: vizana.servelet,
 		data: param,
@@ -140,6 +126,17 @@ function getData(param, successFn)
 	});
 }
 
+function getBarsData(from)
+{
+	currentbar = from - pagesize;
+	currentbarend = from + 4 + pagesize;
+
+	var param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT Rank, Count FROM test_table WHERE Rank >= "+currentbar+" AND Rank <= "+currentbarend+";"};
+		//$.getJSON(vizana.servelet+"?&callback=?", param, refreshBars);
+
+	getData(param, refreshAndSaveData);
+}
+
 function updateBarsData(dir)
 {
 	// redraw stuff before updating the data in memory
@@ -147,7 +144,7 @@ function updateBarsData(dir)
 	currentbar += dir*pagesize;
 	currentbarend += dir*pagesize;
 	
-	var param = {"VOid":1, "Type":1, "Mode":0, "Param":vizana.SQL};
+	var param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT Rank, Count FROM test_table WHERE Rank >= "+currentbar+" AND Rank <= "+currentbarend+";"};
 	//$.getJSON(vizana.servelet+"?&callback=?", param, saveData);
 		
 	// update data
@@ -155,31 +152,48 @@ function updateBarsData(dir)
 	
 }
 
+function refreshAndSaveData(data, textStatus, jqXHR)
+{			
+	saveData(data, textStatus, jqXHR);
+	refreshBars(barsData, textStatus, jqXHR);
+}
+
 function saveData(data, textStatus, jqXHR)
 {
-	barsData = data;
+	barsData = data["test_table"];
 }
 
 function refreshBars(data, textStatus, jqXHR)
 {
 	var y = h/2+100, barh = (h-y-p-18-7*10)/5;
+	var m = maxCount;
+	var start = showFrom - currentbar;
 	
+	var barw = 0;
+	var mw = w - 10*p;
 	var code = "";
-	for (var i=0, len = 5; i<len; i++)
-	{	
-		code += '<div class="bar" style="position:absolute;top:'+((barh+10)*i+10)+'px;left:10px;width:'+(Math.random()*w-5*p)+'px;height:'+barh+'px;"></div>';
+	var count = 0;
+
+	for (var i=start, len=start-5; i>len; i--)
+	{		
+		barw = mw * data[i]["Count"]/m;
+		code += '<div class="bar" style="position:absolute;top:'+((barh+10)*count+10)+'px;left:10px;width:'+barw+'px;height:'+barh+'px;">'+data[i]["Count"]+' events</div>';
+		count++;
 	}
 	
-	$("#bars").html(code);
+	$("#bars").html(code).css("font-size",(barh*0.7)+"px");
 	
+	$(".loading").hide("fade","slow");
+	$(".bar").show("slide","slow");
+
 }
 
 function setupBars(from)
 {	
 	showFrom = from;
 
-	var left = currentbar - from,
-	right = showFrom + 4 - currentbarend;
+	var left = currentbar - (from-4),
+	right = showFrom - currentbarend;
 
 	// if outside the barsData, redo everything
 	if (left > 0 || right > 0)
@@ -199,7 +213,6 @@ function setupBars(from)
 	{
 		refreshBars(barsData);
 	}
-	refreshBars(barsData);
 }
 
 function setupSelect(id)
@@ -260,7 +273,8 @@ function setupSelect(id)
 	ctx.closePath();
 	ctx.fill();
 	
-	setupBars(0);
+	showFrom = ranks[getID(id)-1]["max(Rank)"];
+	setupBars(showFrom);
 }
 
 function setupGraph()

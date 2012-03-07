@@ -42,7 +42,7 @@ vizana.init = function()
 	getData(param, function(data){quadrantValues=data[""];}).success(popDataStack);
 		
 	param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT Count FROM test_table ORDER BY Rank;"};
-	getData(param, function(data){graph=data["test_table"];}).success(popDataStack);	
+	getData(param, function(data){graph=data[""];}).success(popDataStack);	
 
 };
 
@@ -160,7 +160,7 @@ function refreshAndSaveData(data, textStatus, jqXHR)
 
 function saveData(data, textStatus, jqXHR)
 {
-	barsData = data["test_table"];
+	barsData = data[""];
 }
 
 function refreshBars(data, textStatus, jqXHR)

@@ -1,9 +1,10 @@
-(function() {
+(function(feedme) {
 
 var anim = 0, pig = [], dollars, f = 0, fd = 1, fa = 0.5, x = 0, y = 0, tx = 0, ty = 0, v = 20, iw = 64, ih = 64, t = false, food = [], w, h, ran = true, lastT = new Date().getTime(),
 vx = 0,vy = 0;
 
-var Start = function(){
+feedme.init = function(fullscreen)
+{
 	var scripts = document.getElementsByTagName("script"),
 	src = scripts[scripts.length-1].src;
 
@@ -11,8 +12,12 @@ var Start = function(){
 	
     var canvas = document.getElementById('feedmeCanvas'),
 	ctx = canvas.getContext('2d');
-	//canvas.width = window.innerWidth;
-	//canvas.height = window.innerHeight;
+	
+	if (fullscreen)
+	{
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	}
 	
     w = canvas.width;
     h = canvas.height; 
@@ -222,6 +227,5 @@ var GetPigImage = function(width, height){
 	return ctx.getImageData(0,0,w,h);
 };
 
-Start();
 
-}());
+}(window.feedme = window.feedme || {}));

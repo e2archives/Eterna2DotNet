@@ -106,6 +106,7 @@ body
 	padding:0px;
 	background-color: rgba(100,071,64,0.3);
 	z-index:10;
+	cursor: pointer;
 }
 
 #graph

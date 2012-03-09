@@ -15,7 +15,7 @@ showFrom = 0,
 currentbar = -1,
 currentbarend = -1,
 barsData = [],
-pagesize = 10,
+pagesize = 20,
 maxCount,
 quadrantValues,
 ranks,
@@ -27,22 +27,24 @@ loaded = false;
 // public methods
 vizana.init = function()
 {
-	dataStackCallback = initData;
+	setupPage();
 
 	// 2 inside getdata stack
 	getDataStack = 4;
 	
 	var param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT max(Count) FROM test_table;"};
-	getData(param, function(data){maxCount=data[""][0]["max(Count)"];}).success(popDataStack);
-
+	vizana.addQuery(param, function(data){maxCount=data[""][0]["max(Count)"];});
+	
 	param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT min(Rank),max(Rank) FROM test_table GROUP BY Percentile ORDER BY Percentile;"};
-	getData(param, function(data){ranks=data[""];}).success(popDataStack);
+	vizana.addQuery(param, function(data){ranks=data[""];});
 		
 	param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT max(Count) FROM test_table GROUP BY Percentile ORDER BY Percentile;"};
-	getData(param, function(data){quadrantValues=data[""];}).success(popDataStack);
+	vizana.addQuery(param, function(data){quadrantValues=data[""];});
 		
 	param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT Count FROM test_table ORDER BY Rank;"};
-	getData(param, function(data){graph=data[""];}).success(popDataStack);	
+	vizana.addQuery(param, function(data){graph=data[""];});
+	
+	vizana.Query(initData, true);
 
 };
 
@@ -55,7 +57,6 @@ function initData()
 	setupGraph();
 	setupListener();
 	$(window).resize(resize);
-	$(".loading").hide("fade","slow");
 
 	setupSelect(selected);
 
@@ -66,12 +67,6 @@ function resize()
 	setupCSS();
 	setupGraph();
 	setupSelect(selected);
-}
-
-function popDataStack()
-{
-	getDataStack--;
-	if (getDataStack == 0) dataStackCallback();
 }
 
 function setupText()
@@ -88,6 +83,12 @@ function setupText()
 function setupListener()
 {
 	$(".quad").click(quadClick);
+	$("#contentfooter").click(nextClick);
+}
+
+function nextClick()
+{
+	setupBars(showFrom-5);
 }
 
 function quadClick(event)
@@ -109,51 +110,35 @@ function getID(id)
 	return id.charAt(id.length-1);
 }
 
-function getData(param, successFn)
-{
-	$("#spinner").show("fade","slow");
 
-	return $.ajax({
-		url: vizana.servelet,
-		data: param,
-		dataType: "jsonp",
-		jsonp: "callback",
-		timeout: 10000,
-		success: successFn,
-		error: function(XHR, textStatus, errorThrown){
-        alert("Failed to retrieve data: " + errorThrown);
-		}
-	});
-}
 
 function getBarsData(from)
 {
+	$("#spinner").show("fade","slow");
+
 	currentbar = from - pagesize;
 	currentbarend = from + 4 + pagesize;
 
 	var param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT Rank, Count FROM test_table WHERE Rank >= "+currentbar+" AND Rank <= "+currentbarend+";"};
-		//$.getJSON(vizana.servelet+"?&callback=?", param, refreshBars);
-
-	getData(param, refreshAndSaveData);
+	vizana.jsonP(param, refreshAndSaveData);
 }
 
 function updateBarsData(dir)
 {
 	// redraw stuff before updating the data in memory
-	refreshBars(data);
+	refreshBars(barsData);
 	currentbar += dir*pagesize;
 	currentbarend += dir*pagesize;
 	
 	var param = {"VOid":1, "Type":1, "Mode":0, "Param":"SELECT Rank, Count FROM test_table WHERE Rank >= "+currentbar+" AND Rank <= "+currentbarend+";"};
-	//$.getJSON(vizana.servelet+"?&callback=?", param, saveData);
 		
 	// update data
-	getData(param, saveData);
+	vizana.jsonP(param, saveData);
 	
 }
 
 function refreshAndSaveData(data, textStatus, jqXHR)
-{			
+{	
 	saveData(data, textStatus, jqXHR);
 	refreshBars(barsData, textStatus, jqXHR);
 }
@@ -161,10 +146,11 @@ function refreshAndSaveData(data, textStatus, jqXHR)
 function saveData(data, textStatus, jqXHR)
 {
 	barsData = data[""];
+
 }
 
 function refreshBars(data, textStatus, jqXHR)
-{
+{	
 	var y = h/2+100, barh = (h-y-p-18-7*10)/5;
 	var m = maxCount;
 	var start = showFrom - currentbar;
@@ -173,7 +159,7 @@ function refreshBars(data, textStatus, jqXHR)
 	var mw = w - 10*p;
 	var code = "";
 	var count = 0;
-
+	
 	for (var i=start, len=start-5; i>len; i--)
 	{		
 		barw = mw * data[i]["Count"]/m;
@@ -324,6 +310,34 @@ function drawGraph(startX, quadWidth, qh, ctx, q, index)
 	{
 		ctx.lineTo(startX+(i+1)*step,(1-q[i][index]/maxCount)*qh);
 	}
+}
+
+function setupPage()
+{
+	var codes =	vizana.DIVwithSPAN("title");
+	codes += vizana.DIVwithSPAN("q0","header");
+	codes += vizana.DIVwithSPAN("q1","header");
+	codes += vizana.DIVwithSPAN("q2","header");
+	codes += vizana.DIVwithSPAN("q3","header");
+	codes += vizana.DIVwithSPAN("q4","header");
+	codes += vizana.DIVwithSPAN("c0","footer");
+	codes += vizana.DIVwithSPAN("c1","footer");
+	codes += vizana.DIVwithSPAN("c2","footer");
+	codes += vizana.DIVwithSPAN("c3","footer");
+	codes += vizana.DIVwithSPAN("c4","footer");
+	codes += vizana.DIVwithSPAN("xvalue","footer");
+	codes += vizana.DIV("b1","quad");
+	codes += vizana.DIV("b2","quad");
+	codes += vizana.DIV("b3","quad");
+	codes += vizana.DIV("b4","quad");
+	codes += vizana.DIV("bars","anim");
+	codes += vizana.DIV("contentfooter","anim");
+	codes += vizana.DIV("spinner","loading");
+	codes += vizana.DIV("bgspinner","loading");
+	codes += vizana.CANVAS("graph");
+	codes += vizana.CANVAS("selected", "anim");
+
+	$("#container").html(codes);
 }
 
 function setupCSS()

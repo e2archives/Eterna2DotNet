@@ -22,7 +22,7 @@ int main()
 	cin >> file;
 
 	
-	CodeJam2008r1A::Scalar(file.c_str());
+	CodeJam2008r1A::Milkshakes(file.c_str());
 
 	
 	cin.get();

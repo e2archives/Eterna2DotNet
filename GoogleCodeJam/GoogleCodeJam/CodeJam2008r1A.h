@@ -3,10 +3,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <stack>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-
 
 
 class CodeJam2008r1A

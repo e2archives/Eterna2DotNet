@@ -25,19 +25,26 @@ void CodeJam2008r1A::Milkshakes(const char* file)
 
 	for (int i=0; i<c; i++)
 	{
-		std::vector<int> *malt, *unmalt, checklist;
+		std::vector<int> *malt, *unmalt;
+		std::stack<int> maltchecklist;
+		std::vector<int> **member_likes;
 		int *solution, *members;
 		int n, m;
+		bool allunmalt = true, has_solution = false;
 
-		in >> n;
-		in >> m;
+		in >> n;	// # flavors
+		in >> m;	// # members
 
 		solution = new int[n];
 		members = new int[m];
+		memset(solution,0,sizeof(bool));
+		memset(members,0,sizeof(int));
 
+		*member_likes = new std::vector<int>[m];
+	
 		malt = new std::vector<int>[n];
 		unmalt = new std::vector<int>[n];
-		checklist = new std::vector<int>(m);
+		maltchecklist = std::stack<int>();
 
 		for (int j=0; j<n; j++)
 		{
@@ -45,43 +52,86 @@ void CodeJam2008r1A::Milkshakes(const char* file)
 			unmalt[j] = std::vector<int>(m);
 		}
 
+		// member loop
 		for (int j=0; j<m; j++)
 		{
-			int t;
-			in >> t;
+			member_likes[j] = new std::vector<int>[2];
+			member_likes[j][0] = std::vector<int>(n);
+			member_likes[j][1] = std::vector<int>(n);
 
-			checklist.push_back(j);
+			int t, num_unmalt = 0;
+			in >> t;
 
 			for (int k=0; k<t; k++)
 			{
-				int flavor, malt;
+				int flavor, maltornot;
 				in >> flavor; 
-				in >> malt;
+				in >> maltornot;
+				
+				member_likes[j][maltornot].push_back(flavor-1);
 
-				if (malt == 0) unmalt[flavor-1].push_back(j);
+				if (malt == 0) 
+				{
+					unmalt[flavor-1].push_back(j);
+					num_unmalt++;
+				}
 				else malt[flavor-1].push_back(j);		
+
+			}
+			if (allunmalt && num_unmalt == 0) 
+			{
+				allunmalt = false;
+				maltchecklist.push(j);
 			}
 		}
 
-		for (int j=0; j<n; j++)
+		if (!allunmalt)
 		{
-  			for ( std::vector<int>::iterator it = unmalt.begin() ; it < unmalt.end(); it++ )
+			while (!maltchecklist.empty())
 			{
-				remove(checklist.begin(), checklist.end(), j);
-				members[*it] = 1;
-			}
-    	
-			int *no_flavor;
-			no_flavor = find(&members[0], &members[m], 0);
+				int p_member = maltchecklist.pop();
 
-			for (int k=0; k<m; k++)
+				for ( std::vector<int>::iterator it = member_likes[p_member][1].begin(); it < member_likes[p_member][1].end(); it++ )
+				{
+					solution[*it] = 1;
+					for ( std::vector<int>::iterator it2 = unmalt[*it].begin(); it2 < unmalt[*it].end(); it2++ )
+					{
+						maltchecklist.push(*it2);
+					}
+				}
+			}
+
+			for (int j=0; j<n; j++)
 			{
-				p = find(&flavor[k][0], &flavor[k][flavor[k].length()], j);
-				if (p != &flavor[k][flavor[k].length()]) solution[j] 
+  				for ( std::vector<int>::iterator it = unmalt.begin(); it < unmalt.end(); it++ )
+				{
+					remove(checklist.begin(), checklist.end(), j);
+					members[*it] = 1;
+				}
+	    	
+				int *no_flavor;
+				no_flavor = find(&members[0], &members[m], 0);
+
+				for (int k=0; k<m; k++)
+				{
+					p = find(&flavor[k][0], &flavor[k][flavor[k].length()], j);
+					if (p != &flavor[k][flavor[k].length()]) solution[j] 
+				}
 			}
 		}
-		
-		out << "Case #" << i+1 << ": " << "Impossible" << "\n";
+
+		if (allunmalt || has_solution) 
+		{
+			out << "Case #" << i+1 << ": ";
+			for (int a=0; a<n; a++)
+			{
+				out << solution[a] << " ";
+			}
+			out << endl;
+		}
+		else
+			out << "Case #" << i+1 << ": " << "Impossible" << endl;
+
 
 	}
 
